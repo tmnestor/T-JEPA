@@ -46,14 +46,32 @@ python scripts/train.py --dataset california --epochs 100 --batch-size 512
 python scripts/train.py --dataset adult --epochs 100
 ```
 
-Checkpoints are saved to `checkpoints/` (`best.pt` and `last.pt`). Training uses early stopping with patience=15.
+Checkpoints and training history are saved per dataset to `checkpoints/{dataset}/`:
+
+```
+checkpoints/
+  california/
+    best.pt
+    last.pt
+    training_history.csv
+  adult/
+    best.pt
+    last.pt
+    training_history.csv
+```
+
+Training uses early stopping with patience=15.
 
 ### Evaluation
 
 Evaluate learned representations with a linear MLP probe on the downstream task:
 
 ```bash
-python scripts/evaluate.py --checkpoint checkpoints/best.pt --dataset california
+# Auto-resolves to checkpoints/{dataset}/best.pt
+python scripts/evaluate.py --dataset california
+
+# Or specify checkpoint explicitly
+python scripts/evaluate.py --checkpoint checkpoints/adult/best.pt --dataset adult
 ```
 
 Reports R² for regression tasks and accuracy for classification tasks.

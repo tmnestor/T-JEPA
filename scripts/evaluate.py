@@ -31,7 +31,7 @@ DATASETS = {
 
 @app.command()
 def evaluate(
-    checkpoint: str = typer.Option("checkpoints/best.pt", help="Path to checkpoint"),
+    checkpoint: str = typer.Option("", help="Path to checkpoint (default: checkpoints/{dataset}/best.pt)"),
     dataset: str = typer.Option("california", help="Dataset name"),
     seed: int = typer.Option(42, help="Random seed"),
     probe_epochs: int = typer.Option(100, help="Epochs for MLP probe"),
@@ -71,10 +71,11 @@ def evaluate(
         cat_cardinalities=cat_cards,
     )
 
-    # Load checkpoint
-    checkpoint_path = Path(checkpoint)
+    # Load checkpoint (default to dataset-namespaced path)
+    checkpoint_path = Path(checkpoint) if checkpoint else Path(f"checkpoints/{dataset}/best.pt")
     if not checkpoint_path.exists():
         console.print(f"[bold red]Checkpoint not found: {checkpoint_path}[/bold red]")
+        console.print(f"[yellow]Train first: python scripts/train.py --dataset {dataset}[/yellow]")
         raise typer.Exit(1) from None
 
     info = load_checkpoint(checkpoint_path, model, device=device)

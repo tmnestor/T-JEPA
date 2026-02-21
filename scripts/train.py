@@ -130,7 +130,6 @@ def train(
 
     best_loss = trainer.train()
     console.print(f"[bold green]Done! Best loss: {best_loss:.6f}[/bold green]")
-    console.print(f"[bold]Checkpoints saved to: {checkpoint_dir}/[/bold]")
 
 
 if __name__ == "__main__":

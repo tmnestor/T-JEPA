@@ -1,5 +1,6 @@
 """T-JEPA training loop."""
 
+import csv
 from pathlib import Path
 
 import torch
@@ -89,7 +90,16 @@ class TJEPATrainer:
             Best validation loss (or last train loss if no val set).
         """
         best_loss = float("inf")
-        checkpoint_dir = Path(self.config.training.checkpoint_dir)
+        dataset_name = self.config.data.dataset
+        checkpoint_dir = Path(self.config.training.checkpoint_dir) / dataset_name
+        checkpoint_dir.mkdir(parents=True, exist_ok=True)
+
+        # Training history CSV
+        history_path = checkpoint_dir / "training_history.csv"
+        history_fields = ["epoch", "train_loss", "val_loss", "lr", "best_loss"]
+        with open(history_path, "w", newline="") as f:
+            writer = csv.DictWriter(f, fieldnames=history_fields)
+            writer.writeheader()
 
         ds = self.train_loader.dataset
         has_num = hasattr(ds, "x_num") and ds.x_num is not None
@@ -118,6 +128,19 @@ class TJEPATrainer:
                 best_loss = current_loss
                 save_checkpoint(self.model, self.optimizer, epoch, current_loss, checkpoint_dir / "best.pt")
 
+            # Append to training history
+            with open(history_path, "a", newline="") as f:
+                writer = csv.DictWriter(f, fieldnames=history_fields)
+                writer.writerow(
+                    {
+                        "epoch": epoch + 1,
+                        "train_loss": f"{train_loss:.6f}",
+                        "val_loss": f"{val_loss:.6f}" if val_loss is not None else "",
+                        "lr": f"{lr:.2e}",
+                        "best_loss": f"{best_loss:.6f}",
+                    }
+                )
+
             # Early stopping
             if self.early_stopping(current_loss):
                 console.print(f"[yellow]Early stopping at epoch {epoch + 1}[/yellow]")
@@ -126,6 +149,8 @@ class TJEPATrainer:
         # Save final checkpoint
         save_checkpoint(self.model, self.optimizer, epoch, current_loss, checkpoint_dir / "last.pt")
         console.print(f"[green]Training complete. Best loss: {best_loss:.6f}[/green]")
+        console.print(f"[bold]Checkpoints: {checkpoint_dir}/[/bold]")
+        console.print(f"[bold]Training history: {history_path}[/bold]")
         return best_loss
 
     def _train_epoch(self, epoch: int, has_num: bool, has_cat: bool) -> float:
