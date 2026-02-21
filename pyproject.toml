@@ -1,0 +1,20 @@
+[project]
+name = "t-jepa"
+version = "0.1.0"
+description = "T-JEPA: Augmentation-free self-supervised learning for tabular data"
+requires-python = ">=3.12"
+
+[tool.ruff]
+line-length = 108
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "B", "I", "UP"]
+ignore = ["ARG001", "ARG002", "F841"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]

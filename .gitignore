@@ -1,0 +1,26 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Environment
+.env
+
+# IDE
+.vscode/
+.idea/
+
+# Claude
+.claude/
+
+# Checkpoints
+checkpoints/
+
+# Coverage
+htmlcov/
+.coverage
