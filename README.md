@@ -6,16 +6,17 @@ T-JEPA adapts the Joint Embedding Predictive Architecture to tabular datasets. I
 
 ## How It Works
 
-```
-Raw Features → Tokenizer → [REG] + Feature Tokens
-                                ↓
-                    ┌───────────┴───────────┐
-                    │                       │
-              Context Mask             Full Input
-                    ↓                       ↓
-            Context Encoder          Target Encoder (EMA)
-                    ↓                       ↓
-               Predictor ──→ MSE Loss ←── Targets
+```mermaid
+flowchart TD
+    A[Raw Features] --> B[Tokenizer]
+    B --> C["[REG] + Feature Tokens"]
+    C --> D[Context Mask]
+    C --> E[Full Input]
+    D --> F[Context Encoder]
+    E --> G["Target Encoder (EMA)"]
+    F --> H[Predictor]
+    H --> I[MSE Loss]
+    G --> I
 ```
 
 1. **Tokenizer** converts numerical (linear projection) and categorical (embedding lookup) features into tokens, prepending a learnable `[REG]` token
