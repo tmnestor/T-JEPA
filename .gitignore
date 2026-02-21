@@ -24,3 +24,5 @@ checkpoints/
 # Coverage
 htmlcov/
 .coverage
+
+CLAUDE.md
